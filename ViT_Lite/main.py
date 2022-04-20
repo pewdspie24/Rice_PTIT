@@ -436,30 +436,7 @@ def run_experiment(model):
     tf.saved_model.save(model, 'saved_model')
     return history
 
-
-# Run experiments with the vanilla ViT
-# vit = create_vit_classifier(vanilla=True)
-# history = run_experiment(vit)
-
 # Run experiments with the Shifted Patch Tokenization and
 # Locality Self Attention modified ViT
 vit_sl = create_vit_classifier(vanilla=False)
 history = run_experiment(vit_sl)    
-
-"""
-# Final Notes
-
-With the help of Shifted Patch Tokenization and Locality Self Attention,
-we were able to get ~**3-4%** top-1 accuracy gains on CIFAR100.
-
-The ideas on Shifted Patch Tokenization and Locality Self Attention
-are very intuitive and easy to implement. The authors also ablates of
-different shifting strategies for Shifted Patch Tokenization in the
-supplementary of the paper.
-
-I would like to thank [Jarvislabs.ai](https://jarvislabs.ai/) for
-generously helping with GPU credits.
-
-You can use the trained model hosted on [Hugging Face Hub](https://huggingface.co/keras-io/vit_small_ds_v2)
-and try the demo on [Hugging Face Spaces](https://huggingface.co/spaces/keras-io/vit-small-ds).
-"""
