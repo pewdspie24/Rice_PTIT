@@ -5,7 +5,6 @@ import cv2
 import numpy as np
 ROOT_DIR = "root"
 
-
 def process(mode="train"):
     # filenames = []
     if mode == "train":
