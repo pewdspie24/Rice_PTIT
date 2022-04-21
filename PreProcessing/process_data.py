@@ -43,7 +43,7 @@ test_path = r""
 NOTE: main func == color_masking
 
 TODO:
-    - tối ưu lại remove_shades: có thể k khả thi lắm do data quá pìu
+    - tối ưu lại remove_shades: có thể k khả thi lắm do data
     - tối ưu findContours trong color_masking():
         + nếu contourArea > threshold nhất định mới lưu
         + vẫn còn các trường hợp bắt nhỏ lẻ (lỗi ở bóng)
