@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div id="main">
+        <h1>File Upload</h1>
+        <form method="POST" action="/submit" enctype="multipart/form-data">
+            <!-- enctype mặc định -->
+            <!-- Cau duoi la cau dung de hien thi hinh anh ra ngoai, lay elm vs id = output, duoc gan bang file vua up len (da duoc tao URL)-->
+            <p><input type="file" name="file" accept="image/*"
+                    onchange="document.getElementById('output').src = window.URL.createObjectURL(this.files[0])"></p>
+            <img id="output" src={{ user_image }} width="300" height="300"></img>
+            <p><input type="submit" value="Predict"></p>
+        </form>
+    </div>
+    <div>
+        <p id="predicted">Predict: {{message}}</p>
+    </div>
+</body>
+
+</html>

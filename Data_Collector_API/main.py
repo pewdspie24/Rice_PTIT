@@ -1,11 +1,14 @@
 import os
 import time
 from datetime import datetime
+from PIL import Image
+import copy
 
 import flask
 import json
-from flask import request
+from flask import request, render_template
 from flask.helpers import make_response
+from werkzeug.utils import secure_filename
 
 import PredictionPytorch
 
@@ -15,13 +18,34 @@ app = flask.Flask(__name__)
 cwd = os.getcwd()
 cwd = os.path.join(cwd, "Data_Collector_API")
 
-classifier = PredictionPytorch.ModelPredict(model_path=os.path.join(os.path.join(cwd, 'models'), 'model.pth'))
+classifier = PredictionPytorch.ModelPredict(
+    model_path=os.path.join(os.path.join(cwd, "models"), "model.pth")
+)
 
-class_name = {0:'BrownSpot', 1:'Healthy', 2:'Hispa', 3:'LeafBlast'}
+class_name = {0: "BrownSpot", 1: "Healthy", 2: "Hispa", 3: "LeafBlast"}
+
+
+def listToString(s):
+
+    # initialize an empty string
+    str1 = ""
+
+    # traverse in the string
+    for ele in s:
+        str1 += str(ele)
+
+    # return string
+    return str1
+
+
+@app.route("/")
+def hello():
+    return render_template("index.html")
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    file = request.files["image"]
+    file = request.files["file"]
     byte_file = file.read()
     output = classifier.predict(byte_file)
     response = make_response(class_name.get(output))
@@ -30,20 +54,20 @@ def predict():
 
 @app.route("/getpercent", methods=["POST"])
 def predict_percent():
-    file = request.files["image"]
+    file = request.files["file"]
     byte_file = file.read()
     outputs = classifier.predict_percent(byte_file)
     result = []
     for idx, out in enumerate(outputs):
         it = out.item()
-        result.append({class_name.get(idx):it*100})
+        result.append({class_name.get(idx): it * 100})
     response = make_response(json.dumps(result))
     return response
 
 
 @app.route("/save", methods=["POST"])
 def save():
-    file = request.files["image"]
+    file = request.files["file"]
     print(type(file))
     class_id = request.form.get("class")
     time_now = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -56,6 +80,23 @@ def save():
     response = make_response("TRUE")
     response.content_type = "text/plain; charset=UTF-8"
     return response
+
+
+@app.route("/submit", methods=["POST"])
+def visual_predict_percent():
+    file = request.files["file"]
+    byte_file = file.read()
+    with open(cwd + "/images/" + secure_filename(file.filename), "wb") as binary_file:
+        binary_file.write(byte_file)
+    save_path = os.path.join(os.path.join(cwd, "images"), secure_filename(file.filename))
+    outputs = classifier.predict_percent(byte_file)
+    result = []
+    for idx, out in enumerate(outputs):
+        it = out.item()
+        result.append({class_name.get(idx): it * 100})
+    return render_template(
+        "index.html", message=listToString(result), user_image=save_path
+    )
 
 
 app.run()
