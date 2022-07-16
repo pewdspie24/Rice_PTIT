@@ -17,11 +17,24 @@
             <p><input type="file" name="file" accept="image/*"
                     onchange="document.getElementById('output').src = window.URL.createObjectURL(this.files[0])"></p>
             <img id="output" src={{ user_image }} width="300" height="300"></img>
-            <p><input type="submit" value="Predict"></p>
+            <!-- <p><input type="submit" value="Predict"></p> -->
+            <select name="class" id="class">
+                <option value="1">Brown Spot</option>
+                <option value="2">Healthy</option>
+                <option value="3">Hispa</option>
+                <option value="4">Leaf Blast</option>
+            </select>
+            <button type="submit">
+                Predict
+            </button>
+            <button type="submit" formaction="/save">
+                Save
+            </button>
         </form>
     </div>
     <div>
         <p id="predicted">Predict: {{message}}</p>
+        <p>{{saved_message}}</p>
     </div>
 </body>
 
