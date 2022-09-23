@@ -1,6 +1,8 @@
+from crypt import methods
 import os
 import time
 from datetime import datetime
+from urllib import response
 from PIL import Image
 import copy
 
@@ -11,6 +13,7 @@ from flask.helpers import make_response
 from werkzeug.utils import secure_filename
 
 import PredictionPytorch
+import PreProcesser
 
 app = flask.Flask(__name__)
 # app.config["DEBUG"] = True
@@ -42,6 +45,26 @@ def listToString(s):
 def hello():
     return render_template("index.html")
 
+# @app.route("/test-blur", methods=["POST"])
+# def get_blurness():
+#     file = request.files["file"]
+#     byte_file = file.read()
+#     processer = PreProcesser.Processer(byte_file)
+    # response = make_response("Blurry" if processer.check_blur() else "Clear")
+    # return response
+
+
+# @app.route("/test-bright", methods=["POST"])
+# def get_brightness():
+#     file = request.files["file"]
+#     byte_file = file.read()
+#     processer = PreProcesser.Processer(byte_file)
+#     result = processer.check_brightness()
+    # if result == 0:
+    #     return make_response("OK")
+    # response = make_response("High" if result == 10 else "Low")
+    # return response
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
@@ -50,6 +73,32 @@ def predict():
     output = classifier.predict(byte_file)
     response = make_response(class_name.get(output))
     return response
+
+
+@app.route("/send2server", methods=["POST"])
+def get_img():
+    file = request.files["file"]
+    byte_file = file.read()
+    processer = PreProcesser.Processer(byte_file)
+    result = processer.process()
+    if result == 1:
+        outputs = classifier.predict_percent(byte_file)
+        result = []
+        for idx, out in enumerate(outputs):
+            it = out.item()
+            result.append({class_name.get(idx): it * 100})
+        response = make_response(json.dumps(result))
+        return response
+    else:
+        # save invalid image for later inspection
+        time_now = datetime.now().strftime("%Y%m%d_%H%M%S")
+        dir_path = os.path.join(str(0), time_now + ".jpg")
+        if os.path.exists(os.path.join(cwd, dir_path)):
+            time.sleep(1)
+            time_now = datetime.now().strftime("%Y%m%d_%H%M%S")
+            dir_path = os.path.join(str(0), time_now + ".jpg")
+        file.save(os.path.join(cwd, dir_path))
+        return make_response(str(result))
 
 
 @app.route("/getpercent", methods=["POST"])
