@@ -1,4 +1,5 @@
 from distutils.errors import PreprocessError
+from turtle import shape
 import cv2
 from PIL import Image
 import io
@@ -15,7 +16,8 @@ class Processer:
         self.img = self.img.resize((550, 550))
         self.img = np.array(self.img)
         self.img = self.img[:, :, ::-1].copy()
-        self.blur_threshold = 1315.0 - 600  # mean of new data
+        # self.blur_threshold = 1315.0 - 600  # mean of new data
+        self.blur_threshold = 200.0
         self.bright_threshold = 130.0
 
     def Init(self, path):
@@ -26,7 +28,7 @@ class Processer:
 
     def check_blur(self):
         gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
-        print(cv2.Laplacian(gray, cv2.CV_64F).var())
+        print("blur thresh: ", cv2.Laplacian(gray, cv2.CV_64F).var())
         if cv2.Laplacian(gray, cv2.CV_64F).var() < self.blur_threshold:
             return True
         return False
@@ -49,7 +51,7 @@ class Processer:
         brightness /= nr_of_pixels
         # brightness = sum(self.get_pixel_brightness(pixel)
         #                  for pixel in row for row in self.img) / nr_of_pixels
-        # print(brightness)
+        print("bright: ", brightness)
         if brightness > (self.bright_threshold + self.bright_threshold / 4):
             return 10
         if brightness < (self.bright_threshold - self.bright_threshold / 4):
@@ -58,9 +60,10 @@ class Processer:
 
     def process(self):
         blur = 0 if self.check_blur() == False else 1
-        if self.check_brightness() == 10:
+        bright = self.check_brightness()
+        if bright == 10:
             bright = 1
-        elif self.check_brightness() == -10:
+        elif bright == -10:
             bright = -1
         else:
             bright = 0

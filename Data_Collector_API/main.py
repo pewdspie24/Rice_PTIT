@@ -76,8 +76,14 @@ def predict():
 
 @app.route("/send2server", methods=["POST"])
 def get_img():
+    import io
+    import numpy as np
+    buffer = io.BytesIO()
     file = request.files["file"]
     byte_file = file.read()
+    file.save(buffer)
+    image = np.array(Image.open(file, formats=["JPEG"]))
+    image = Image.fromarray(image)
     processer = PreProcesser.Processer(byte_file)
     result = processer.process()
     if result == 1:
@@ -96,7 +102,7 @@ def get_img():
             time.sleep(1)
             time_now = datetime.now().strftime("%Y%m%d_%H%M%S")
             dir_path = os.path.join(str(0), time_now + ".jpg")
-        file.save(os.path.join(cwd, dir_path))
+        image.save(os.path.join(cwd, dir_path))
         return make_response(str(result))
 
 
