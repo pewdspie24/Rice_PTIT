@@ -2,7 +2,6 @@ import os
 import time
 from datetime import datetime
 from PIL import Image
-import copy
 
 import flask
 import json
@@ -11,6 +10,7 @@ from flask.helpers import make_response
 from werkzeug.utils import secure_filename
 
 import PredictionPytorch
+import PreProcessor
 
 app = flask.Flask(__name__)
 # app.config["DEBUG"] = True
@@ -50,6 +50,38 @@ def predict():
     output = classifier.predict(byte_file)
     response = make_response(class_name.get(output))
     return response
+
+
+@app.route("/send2server", methods=["POST"])
+def get_img():
+    import io
+    import numpy as np
+    buffer = io.BytesIO()
+    file = request.files["file"]
+    byte_file = file.read()
+    file.save(buffer)
+    image = np.array(Image.open(file, formats=["JPEG"]))
+    image = Image.fromarray(image)
+    processor = PreProcessor.Processor(byte_file)
+    result = processor.process()
+    if result == 1:
+        outputs = classifier.predict_percent(byte_file)
+        result = []
+        for idx, out in enumerate(outputs):
+            it = out.item()
+            result.append({class_name.get(idx): it * 100})
+        response = make_response(json.dumps(result))
+        return response
+    else:
+        # save invalid image for later inspection
+        time_now = datetime.now().strftime("%Y%m%d_%H%M%S")
+        dir_path = os.path.join(str(0), time_now + ".jpg")
+        if os.path.exists(os.path.join(cwd, dir_path)):
+            time.sleep(1)
+            time_now = datetime.now().strftime("%Y%m%d_%H%M%S")
+            dir_path = os.path.join(str(0), time_now + ".jpg")
+        image.save(os.path.join(cwd, dir_path))
+        return make_response(str(result))
 
 
 @app.route("/getpercent", methods=["POST"])
