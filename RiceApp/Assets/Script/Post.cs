@@ -20,11 +20,20 @@ public class ReturnedClass
     public string type { get; set; }
     public int _intClass { get; set; }
     public float confidence { get; set; }
+    public int errorStat { get; set; }
     public ReturnedClass()
     {
         type = "UNKNOWN";
         _intClass = 0;
         confidence = 0.0f;
+        errorStat = 1;
+    }
+    public ReturnedClass(int _err)
+    {
+        type = "UNKNOWN";
+        _intClass = 0;
+        confidence = 0.0f;
+        errorStat = _err;
     }
     public ReturnedClass(string _type, float _confidence)
     {
@@ -48,6 +57,7 @@ public class ReturnedClass
                 _intClass = 4;
                 break;
         }
+        errorStat = 1;
     }
 }
 [Serializable]

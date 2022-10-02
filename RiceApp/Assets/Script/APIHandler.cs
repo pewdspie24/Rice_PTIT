@@ -10,11 +10,12 @@ static public class APIHandler
 {
     public static int returnedClass = 0;
     public static ReturnedClass globalSave;
-    static public IEnumerator APICall_Get(string _imgPath, System.Action callback)
+    static public IEnumerator APICall_Get(string _imgPath, System.Action callback, System.Action error)
     {
         WWWForm form = new WWWForm();
-        string _url = "https://203.162.88.122:18008/getpercent";
-        form.AddBinaryData("file", System.IO.File.ReadAllBytes(_imgPath), "riceImg.jpg");
+        string _url = "https://203.162.88.122:18008/send2server";
+        //string _url = "http://127.0.0.1:5000/send2server";
+        form.AddBinaryData("file", System.IO.File.ReadAllBytes(_imgPath));
         using (UnityWebRequest www = UnityWebRequest.Post(_url, form))
         {
             www.certificateHandler = new CustomSLLBypass();
@@ -22,6 +23,7 @@ static public class APIHandler
             if (www.result != UnityWebRequest.Result.Success)
             {
                 Debug.Log(www.error);
+                error();
             }
             else
             {
@@ -36,6 +38,7 @@ static public class APIHandler
     {
         WWWForm form = new WWWForm();
         string _url = "https://203.162.88.122:18008/save";
+        //string _url = "http://127.0.0.1:5000/save";
         form.AddBinaryData("file", System.IO.File.ReadAllBytes(_path));
         form.AddField("class", _class);
         using (UnityWebRequest www = UnityWebRequest.Post(_url, form))
@@ -53,7 +56,8 @@ static public class APIHandler
                 Debug.Log("success");
             }
         }
-    }static public IEnumerator APICall_Save(byte[] _content, int _class, System.Action Succeed, System.Action Failed)
+    }
+    static public IEnumerator APICall_Save(byte[] _content, int _class, System.Action Succeed, System.Action Failed)
     {
         WWWForm form = new WWWForm();
         string _url = "https://203.162.88.122:18008/save";
@@ -78,28 +82,41 @@ static public class APIHandler
     static void ResultParser(string result)
     {
         Debug.Log(result);
-        result = result.Trim(new char[] { '[', ']', ' ' });
-        string[] split = result.Split(',');
-        float currentMax = 0.0f;
-        int classBelonged = 0;
-        int idx = 0;
-        foreach (var item in split)
+        List<string> invalid = new List<string> { "-1", "-2", "-3", "-4", "0" };    // high-exposure, blurry, blurry & high-exposure, blurry and low-exposure, low-exposure
+        if (!invalid.Contains(result))
         {
-            idx++;
-            string _item = item.TrimEnd(',');
-            float _c = JsonHandler.ProcessOne(_item);
-            if (_c > currentMax)
+            result = result.Trim(new char[] { '[', ']', ' ' });
+            string[] split = result.Split(',');
+            float currentMax = 0.0f;
+            int classBelonged = 0;
+            int idx = 0;
+            foreach (var item in split)
             {
-                classBelonged = idx;
-                currentMax = _c;
+                idx++;
+                string _item = item.TrimEnd(',');
+                float _c = JsonHandler.ProcessOne(_item);
+                if (_c > currentMax)
+                {
+                    classBelonged = idx;
+                    currentMax = _c;
+                }
             }
+            SetClass(classBelonged, currentMax);
         }
-        SetClass(classBelonged, currentMax);
+        else
+        {
+            SetError(int.Parse(result));
+        }
     }
     static void SetClass(int _idx, float _conf)
     {
         string[] CLASS = new string[] {"UNKNOWN", "BrownSpot", "Healthy", "Hispa", "LeafBlast" };
         globalSave = new ReturnedClass(CLASS[_idx], _conf);
+        ResultHolder.RefreshResult(globalSave);
+    }
+    static void SetError(int _err)
+    {
+        globalSave = new ReturnedClass(_err);
         ResultHolder.RefreshResult(globalSave);
     }
 }

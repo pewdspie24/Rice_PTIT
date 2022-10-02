@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class MenuController : MonoBehaviour
 {
@@ -10,10 +11,14 @@ public class MenuController : MonoBehaviour
     [SerializeField] GameObject chooseImgButton;
     [SerializeField] GameObject statusDisplay;
     [SerializeField] GameObject displayer;
-    //[SerializeField] GameObject rawImageObj;
+    [SerializeField] GameObject loader;
+    [SerializeField] GameObject errorNoti;
+    [SerializeField] TMP_Text errorText;
+    [SerializeField] Button errConfirm;
 
-    // Take image option section
-    string currentImgPath = "";
+    private int timeElapsed = 0;
+    private bool awaitProcessing = false;
+    
 
     void Start()
     {
@@ -26,6 +31,10 @@ public class MenuController : MonoBehaviour
         {
             return;
         }
+        if (timeElapsed > 10)
+        {
+            ProcErr();
+        }    
     }
     void TakePictureOnClick()
     {
@@ -52,7 +61,15 @@ public class MenuController : MonoBehaviour
                 else
                 {
                     NativeGallery.SaveImageToGallery(ResultHolder.globalTexture, "RiceApp", "rice.jpg");
-                    StartCoroutine(APIHandler.APICall_Get(path, ActivateGetDisplay));
+                    awaitProcessing = true;
+                    StartCoroutine(APIHandler.APICall_Get(path, () =>
+                    {
+                        ActivateGetDisplay();
+                        loader.SetActive(false);
+                        awaitProcessing = false;
+                    }, ProcErr));
+                    loader.SetActive(true);
+                    StartTimer();
                 }
             }
         }, maxSize);
@@ -72,7 +89,16 @@ public class MenuController : MonoBehaviour
                 }
                 else
                 {
-                    StartCoroutine(APIHandler.APICall_Get(path, ActivateGetDisplay));
+                    awaitProcessing = true;
+                    StartCoroutine(APIHandler.APICall_Get(path, async () =>
+                    {
+                        ActivateGetDisplay();
+                        loader.SetActive(false);
+                        awaitProcessing = false;
+                    }, ProcErr));
+                    loader.SetActive(true);
+                    StartTimer();
+                    //StartCoroutine(APIHandler.APICall_Save(path, 1, () => Debug.Log("Success"), () => Debug.Log("failed to sent image to server")));
                 }
             }
         });
@@ -82,5 +108,51 @@ public class MenuController : MonoBehaviour
         Instantiate(displayer, transform.position, Quaternion.identity);
         //displayer.SetActive(true);
         //rawImageObj.GetComponent<RawImage>().texture = globalTexture;
-    }     
+    }
+    private async void StartTimer()
+    {
+        while (true)
+        {
+            if (awaitProcessing == false) return;
+            await Task.Delay(1000);
+            timeElapsed++;
+        }    
+    }  
+    private void ProcErr()
+    {
+        loader.SetActive(false);
+        ResultHolder.RefreshResult(new ReturnedClass(404));
+        ActivateErrorDisplay();
+        timeElapsed = 0;
+        awaitProcessing = false;
+    }    
+
+    public void ActivateErrorDisplay()
+    {
+        string _error = "";
+        switch (ResultHolder.result.errorStat)
+        {
+            case 0:
+                _error = "Your image was taken in a too low-light condition";
+                break;
+            case -1:
+                _error = "Your image was taken in a too bright condition";
+                break;
+            case -2:
+                _error = "Your image is too blurry";
+                break;
+            case -3:
+                _error = "Your image is too blurry and taken in a low-light condition";
+                break;
+            case -4:
+                _error = "Your image is too blurry and taken in a too bright condition";
+                break;
+            default:
+                _error = "Something wrong happen and we can't process your image. Please try again later.";
+                break;
+        }
+        errorText.text = $"Reason: {_error}";
+        errConfirm.onClick.AddListener(() => errorNoti.SetActive(false));
+        errorNoti.SetActive(true);
+    }    
 }

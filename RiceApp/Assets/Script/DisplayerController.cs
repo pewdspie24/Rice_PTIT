@@ -18,11 +18,19 @@ public class DisplayerController : MonoBehaviour
     void Start()
     {
         mainMenuObj = GameObject.FindGameObjectWithTag("MainMenu");
-        mainMenuObj.SetActive(false);
-        thisObj.transform.position = new Vector3(thisObj.transform.position.x, thisObj.transform.position.y, thisObj.transform.position.z + 10);
-        imageContainer.GetComponent<RawImage>().texture = ResultHolder.globalTexture;
-        Debug.Log($"class:{ResultHolder.result.type},conf:{ResultHolder.result.confidence}");
-        DisplayResult();
+        if (ResultHolder.result.errorStat != 1)
+        {
+            mainMenuObj.GetComponent<MenuController>().ActivateErrorDisplay();
+            Destroy(this.gameObject);
+        }
+        else
+        { 
+            mainMenuObj.SetActive(false);
+            thisObj.transform.position = new Vector3(thisObj.transform.position.x, thisObj.transform.position.y, thisObj.transform.position.z + 10);
+            imageContainer.GetComponent<RawImage>().texture = ResultHolder.globalTexture;
+            //Debug.Log($"class:{ResultHolder.result.type},conf:{ResultHolder.result.confidence}");
+            DisplayResult();
+        }
     }
     void DisplayResult()
     {
