@@ -12,7 +12,7 @@ from flask.helpers import make_response
 from werkzeug.utils import secure_filename
 
 import PredictionPytorch
-import PreProcesser
+import PreProcessor
 
 app = flask.Flask(__name__)
 # app.config["DEBUG"] = True
@@ -48,8 +48,8 @@ def hello():
 # def get_blurness():
 #     file = request.files["file"]
 #     byte_file = file.read()
-#     processer = PreProcesser.Processer(byte_file)
-    # response = make_response("Blurry" if processer.check_blur() else "Clear")
+#     processor = Preprocessor.processor(byte_file)
+    # response = make_response("Blurry" if processor.check_blur() else "Clear")
     # return response
 
 
@@ -57,8 +57,8 @@ def hello():
 # def get_brightness():
 #     file = request.files["file"]
 #     byte_file = file.read()
-#     processer = PreProcesser.Processer(byte_file)
-#     result = processer.check_brightness()
+#     processor = Preprocessor.processor(byte_file)
+#     result = processor.check_brightness()
     # if result == 0:
     #     return make_response("OK")
     # response = make_response("High" if result == 10 else "Low")
@@ -84,8 +84,8 @@ def get_img():
     file.save(buffer)
     image = np.array(Image.open(file, formats=["JPEG"]))
     image = Image.fromarray(image)
-    processer = PreProcesser.Processer(byte_file)
-    result = processer.process()
+    processor = PreProcessor.Processor(byte_file)
+    result = processor.process()
     if result == 1:
         outputs = classifier.predict_percent(byte_file)
         result = []
