@@ -1,9 +1,7 @@
 import os
 import time
 from datetime import datetime
-from urllib import response
 from PIL import Image
-import copy
 
 import flask
 import json
@@ -43,26 +41,6 @@ def listToString(s):
 @app.route("/")
 def hello():
     return render_template("index.html")
-
-# @app.route("/test-blur", methods=["POST"])
-# def get_blurness():
-#     file = request.files["file"]
-#     byte_file = file.read()
-#     processor = Preprocessor.processor(byte_file)
-    # response = make_response("Blurry" if processor.check_blur() else "Clear")
-    # return response
-
-
-# @app.route("/test-bright", methods=["POST"])
-# def get_brightness():
-#     file = request.files["file"]
-#     byte_file = file.read()
-#     processor = Preprocessor.processor(byte_file)
-#     result = processor.check_brightness()
-    # if result == 0:
-    #     return make_response("OK")
-    # response = make_response("High" if result == 10 else "Low")
-    # return response
 
 
 @app.route("/predict", methods=["POST"])

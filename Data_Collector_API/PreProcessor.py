@@ -1,5 +1,3 @@
-from distutils.errors import PreprocessError
-from turtle import shape
 import cv2
 from PIL import Image
 import io
