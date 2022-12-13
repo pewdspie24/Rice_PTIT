@@ -21,7 +21,7 @@ It has 2 main functions: Predict and Save.
     ![After Choosing](https://gcdnb.pbrd.co/images/fMNGDaLhL5yx.png?o=1 "After Choosing")
 - Save can be used when we are sure about the class of image we upload. The flow can be described by 3 steps:
     1. Choosing image just like step 1 on predict task.
-    2. Choose class name like below:
+    2. Choose class name like below and click `save` to continue:
     ![After Choosing for Save](https://gcdnb.pbrd.co/images/sxEaE0E4N6Ji.png?o=1 "After Choosing for Save")
     3. A message will be shown to prove that the image has been save on the server with exact class name you chose before.
     ![Save message](https://gcdnb.pbrd.co/images/YF0fSlxwkyfn.png?o=1 "Save message")
