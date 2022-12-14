@@ -2,8 +2,8 @@
 <br />
 
 The project includes 6 types of model in order to find out the best model for Rice Leaf Classification. Also, an API for data collector is also available for using
-Dataset link for download: [https://ptiteduvn-my.sharepoint.com/:f:/g/personal/quangtd_b18cn485_stu_ptit_edu_vn/EnSQUz7vHCRGgrOfvQ1HLEIB4Fxhzm7kVMes72ZDFHlcFw?e=efKPwu](here)
-Link checkpoint of models: [https://drive.google.com/drive/folders/1HMzQud57tJC9IcMo1uVTbBzjqH0myGep?usp=share_link](here)
+Dataset link for download: https://ptiteduvn-my.sharepoint.com/:f:/g/personal/quangtd_b18cn485_stu_ptit_edu_vn/EnSQUz7vHCRGgrOfvQ1HLEIB4Fxhzm7kVMes72ZDFHlcFw?e=efKPwu
+Link checkpoint of models: https://drive.google.com/drive/folders/1HMzQud57tJC9IcMo1uVTbBzjqH0myGep?usp=share_link
 
 ## Instruction for using Data Collector API
 
