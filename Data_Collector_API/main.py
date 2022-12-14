@@ -9,17 +9,25 @@ from flask import request, render_template
 from flask.helpers import make_response
 from werkzeug.utils import secure_filename
 
-import PredictionPytorch
+# import PredictionPytorch
 import PreProcessor
+# import PredictionTensor
+import PredictionPytorch_ViT
 
 app = flask.Flask(__name__)
 # app.config["DEBUG"] = True
 
 cwd = os.getcwd()
-cwd = os.path.join(cwd, "Data_Collector_API")
+# cwd = os.path.join(cwd, "Data_Collector_API")
 
-classifier = PredictionPytorch.ModelPredict(
-    model_path=os.path.join(os.path.join(cwd, "models"), "model.pth")
+# FOR TENSOR
+# classifier = PredictionTensor.ModelPredict(
+#     model_path=os.path.join("/home/riceleaf/rice/Rice_PTIT/Data_Collector_API/models/299x299_ver2_prebest.h5")
+# )
+
+# FOR TORCH
+classifier = PredictionPytorch_ViT.ModelPredict(
+    model_path=os.path.join(os.path.join(cwd, "models"), "ViT_244x244_16.pth")
 )
 
 class_name = {0: "BrownSpot", 1: "Healthy", 2: "Hispa", 3: "LeafBlast"}
@@ -67,9 +75,20 @@ def get_img():
     if result == 1:
         outputs = classifier.predict_percent(byte_file)
         result = []
+        # FOR PYTORCH
         for idx, out in enumerate(outputs):
             it = out.item()
             result.append({class_name.get(idx): it * 100})
+
+        # FOR TF
+        # import numpy
+        # outputs = outputs.numpy().flatten()
+        # _class = 0
+        # conf = 0.0
+        # for i in range(4):
+        #     _class = i
+        #     conf = outputs[i]
+        #     result.append({class_name.get(_class): conf * 100})
         response = make_response(json.dumps(result))
         return response
     else:
@@ -90,9 +109,20 @@ def predict_percent():
     byte_file = file.read()
     outputs = classifier.predict_percent(byte_file)
     result = []
+    # FOR PYTORCH
     for idx, out in enumerate(outputs):
         it = out.item()
         result.append({class_name.get(idx): it * 100})
+
+    # FOR TF
+    # import numpy
+    # outputs = outputs.numpy().flatten()
+    # _class = 0
+    # conf = 0.0
+    # for i in range(4):
+    #     _class = i
+    #     conf = outputs[i]
+    #     result.append({class_name.get(_class): conf * 100})
     response = make_response(json.dumps(result))
     return response
 
@@ -127,12 +157,23 @@ def visual_predict_percent():
     )
     outputs = classifier.predict_percent(byte_file)
     result = []
+    # FOR PYTORCH
     for idx, out in enumerate(outputs):
         it = out.item()
         result.append({class_name.get(idx): it * 100})
+
+    # FOR TF
+    # import numpy
+    # outputs = outputs.numpy().flatten()
+    # _class = 0
+    # conf = 0.0
+    # for i in range(4):
+    #     _class = i
+    #     conf = outputs[i]
+    #     result.append({class_name.get(_class): conf * 100})
     return render_template(
         "index.html", message=listToString(result), user_image=save_path
     )
 
 
-app.run()
+# app.run(port=5000)
