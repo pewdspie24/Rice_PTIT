@@ -13,7 +13,7 @@ static public class APIHandler
     static public IEnumerator APICall_Get(string _imgPath, System.Action callback, System.Action error)
     {
         WWWForm form = new WWWForm();
-        string _url = "https://203.162.88.122:18008/send2server";
+        string _url = "http://203.162.88.102:12007/send2server";
         //string _url = "http://127.0.0.1:5000/send2server";
         form.AddBinaryData("file", System.IO.File.ReadAllBytes(_imgPath));
         using (UnityWebRequest www = UnityWebRequest.Post(_url, form))
@@ -37,7 +37,7 @@ static public class APIHandler
     static public IEnumerator APICall_Save(string _path, int _class, System.Action Succeed, System.Action Failed)
     {
         WWWForm form = new WWWForm();
-        string _url = "https://203.162.88.122:18008/save";
+        string _url = "http://203.162.88.102:12007/save";
         //string _url = "http://127.0.0.1:5000/save";
         form.AddBinaryData("file", System.IO.File.ReadAllBytes(_path));
         form.AddField("class", _class);
@@ -60,7 +60,7 @@ static public class APIHandler
     static public IEnumerator APICall_Save(byte[] _content, int _class, System.Action Succeed, System.Action Failed)
     {
         WWWForm form = new WWWForm();
-        string _url = "https://203.162.88.122:18008/save";
+        string _url = "http://203.162.88.102:12007/save";
         form.AddBinaryData("file", _content);
         form.AddField("class", _class);
         using (UnityWebRequest www = UnityWebRequest.Post(_url, form))

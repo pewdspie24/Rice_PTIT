@@ -133,22 +133,28 @@ public class MenuController : MonoBehaviour
         switch (ResultHolder.result.errorStat)
         {
             case 0:
-                _error = "Your image was taken in a too low-light condition";
+                //_error = "Your image was taken in a too low-light condition";
+                _error = "Ảnh chụp trong môi trường thiếu ánh sáng";
                 break;
             case -1:
-                _error = "Your image was taken in a too bright condition";
+                //_error = "Your image was taken in a too bright condition";
+                _error = "Ảnh chụp trong môi trường quá chói";
                 break;
             case -2:
-                _error = "Your image is too blurry";
+                //_error = "Your image is too blurry";
+                _error = "Ảnh chụp bị mờ";
                 break;
             case -3:
-                _error = "Your image is too blurry and taken in a low-light condition";
+                //_error = "Your image is too blurry and taken in a low-light condition";
+                _error = "Ảnh chụp bị mờ và chụp trong môi trường thiếu sáng";
                 break;
             case -4:
-                _error = "Your image is too blurry and taken in a too bright condition";
+                //_error = "Your image is too blurry and taken in a too bright condition";
+                _error = "Ảnh chụp bị mờ và chụp trong môi trường quá chói";
                 break;
             default:
-                _error = "Something wrong happen and we can't process your image. Please try again later.";
+                //_error = "Something wrong happen and we can't process your image. Please try again later.";
+                _error = "Lỗi hệ thống xử lý, vui lòng thử lại sau";
                 break;
         }
         errorText.text = $"Reason: {_error}";

@@ -14,6 +14,9 @@ public class DisplayerController : MonoBehaviour
     [SerializeField] GameObject displayedText;
     [SerializeField] GameObject dropdown;
     [SerializeField] GameObject saveImgToServer;
+    [SerializeField] GameObject scrollView;
+    [SerializeField] GameObject scrollContent;
+    [SerializeField] GameObject normScrollContent;
     // Start is called before the first frame update
     void Start()
     {
@@ -39,13 +42,17 @@ public class DisplayerController : MonoBehaviour
         predictYes.SetActive(true);
         predictYes.GetComponent<Button>().onClick.AddListener(Exit);
         predictNo.GetComponent<Button>().onClick.AddListener(InitSavingImgFunctionallity);
-        displayedText.GetComponent<Text>().text = $"Model's prediction: {ResultHolder.result.type}\nConfidence score: {ResultHolder.result.confidence}\n\nAre the prediction correct?";
+        //displayedText.GetComponent<Text>().text = $"Model's prediction: {ResultHolder.result.type}\nConfidence score: {ResultHolder.result.confidence}";
+        displayedText.GetComponent<Text>().text = $"Kết quả model trả về: {ResultHolder.result.type}\nĐộ tự tin: {ResultHolder.result.confidence}";
+        //scrollContent.GetComponent<TMP_Text>().text = ResultHolder.result.desc;
+        //normScrollContent.GetComponent<Text>().text = ResultHolder.result.desc;
+        scrollContent.GetComponent<Text>().text = ResultHolder.result.desc;
     }
     void DisplayUserPrompt()
     {
         predictNo.SetActive(false);
         predictYes.SetActive(false);
-        displayedText.GetComponent<Text>().text = $"Please choose the correct state for the image chosen above";
+        displayedText.GetComponent<Text>().text = $"Vui lòng chọn loại bệnh chính xác cho ảnh trên";
         InitSavingImgFunctionallity();
     }    
     void InitSavingImgFunctionallity()
